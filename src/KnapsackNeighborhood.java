@@ -8,8 +8,7 @@ public class KnapsackNeighborhood {
         int currentIterations = 0;
         boolean foundBetter = false;
 
-        ArrayList<Item> bestItems = items;
-        ArrayList<Knapsack> bestKnappsackCombo = knapsacks;
+
 
         ArrayList<ArrayList<Item>> sameValueItems = new ArrayList<ArrayList<Item>>();
         ArrayList<ArrayList<Knapsack>> sameValueSacks = new ArrayList<ArrayList<Knapsack>>();
@@ -25,8 +24,8 @@ public class KnapsackNeighborhood {
                         if (knapsacks.get(i) != knapsacks.get(k)) {
                             for (int h = j; h < knapsacks.get(k).getBag().size(); h++) {
 
-                                ArrayList<Knapsack> tempKnapsack = cloneKnapSacks(bestKnappsackCombo);
-                                ArrayList<Item> tempItem = new ArrayList<Item>(bestItems);
+                                ArrayList<Knapsack> tempKnapsack = cloneKnapSacks(knapsacks);
+                                ArrayList<Item> tempItem = new ArrayList<Item>(items);
                                 System.out.println("\n item "+j+" From bag "+i+" bag weight: "+tempKnapsack.get(i).getBag().get(j).getWeight()+"\n bag "+i+" space left: "+tempKnapsack.get(i).getSpaceLeft()+"\n item "+h+" From bag "+k+" bag weight: "+tempKnapsack.get(k).getBag().get(h).getWeight()+"\n bag "+k+" space left: "+tempKnapsack.get(k).getSpaceLeft()+ "\n "+o);
 
                                 if(trySwap(tempKnapsack.get(i),tempKnapsack.get(k),j,h)){
@@ -44,19 +43,19 @@ public class KnapsackNeighborhood {
                                             System.out.println("Added item");
                                         }
 
-                                        if(evalSacks(tempKnapsack) > evalSacks(bestKnappsackCombo)){
-                                            bestKnappsackCombo =tempKnapsack;
-                                            bestItems = tempItem;
+                                        if(evalSacks(tempKnapsack) > evalSacks(knapsacks)){
+                                            knapsacks =tempKnapsack;
+                                            items = tempItem;
                                             foundBetter = true;
                                             System.out.println("Found better combo");
-                                        } else if(evalSacks(tempKnapsack) == evalSacks(bestKnappsackCombo) && foundBetter == false){
+                                        } else if(evalSacks(tempKnapsack) == evalSacks(knapsacks) && foundBetter == false){
 
                                             sameValueSacks.add(tempKnapsack);
                                             sameValueItems.add(tempItem);
                                             System.out.println("found same value combo");
                                         }
 
-                                        System.out.println(evalSacks(bestKnappsackCombo));
+                                        System.out.println(evalSacks(knapsacks));
 
                                     }
                                 }
@@ -66,18 +65,14 @@ public class KnapsackNeighborhood {
                 }
             }
 
-            if(!foundBetter){
+            if(!foundBetter && sameValueItems.size() > 0){
                 Random random = new Random();
+                System.out.println(sameValueItems.size());
                 int ranIndex = random.nextInt(sameValueItems.size());
                 System.out.println(ranIndex);
                 items = sameValueItems.get(ranIndex);
                 knapsacks = sameValueSacks.get(ranIndex);
-                bestItems = sameValueItems.get(ranIndex);
-                bestKnappsackCombo = sameValueSacks.get(ranIndex);
 
-            }else {
-                items = bestItems;
-                knapsacks = bestKnappsackCombo;
             }
             sameValueItems = new ArrayList<ArrayList<Item>>();
             sameValueSacks = new ArrayList<ArrayList<Knapsack>>();

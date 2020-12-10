@@ -103,14 +103,14 @@ public class KnapsackGreedy {
 
         //init and add items
         Item i1 = new Item(10, 71);
-        Item i2 = new Item(12, 16);
+        Item i2 = new Item(12, 14);
         Item i3 = new Item(33, 53);
         Item i4 = new Item(82, 84);
         Item i5 = new Item(54, 43);
         Item i6 = new Item(45, 25);
         Item i7 = new Item(23, 15);
         Item i12 = new Item(10, 72);
-        Item i22 = new Item(14, 16);
+        Item i22 = new Item(14, 17);
         Item i32 = new Item(5, 52);
         Item i42 = new Item(58, 83);
         Item i52 = new Item(65, 44);
@@ -190,7 +190,7 @@ public class KnapsackGreedy {
 
         System.out.println("Greedy Value: "+search.evalSacksGreedy(result.sacks));
 
-        SackAndItem sackAndItem = search.search(listOfItems, listOfKnapsacks, 4);
+        SackAndItem sackAndItem = search.search(listOfItems, listOfKnapsacks, 10000);
         System.out.println("Neighborhood search :"+ search.evalSacks(sackAndItem.sacks));
 
 
