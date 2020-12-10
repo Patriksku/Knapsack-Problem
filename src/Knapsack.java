@@ -13,6 +13,26 @@ public class Knapsack implements Comparable<Knapsack>{
         this.spaceLeft = capacity;
         this.capacity = capacity;
     }
+    public Knapsack(double capacity, ArrayList<Item> items) {
+        this.weight = 0;
+        this.value = 0;
+        this.spaceLeft = capacity;
+        this.capacity = capacity;
+        bag = items;
+
+        for(int i = 0; i < items.size();i++){
+            weight += items.get(i).getWeight();
+            value += items.get(i).getValue();
+        }
+    }
+
+    public Knapsack(Knapsack knapsack) {
+        this.weight = knapsack.weight;
+        this.value = knapsack.value;
+        this.spaceLeft = knapsack.spaceLeft;
+        this.capacity = knapsack.capacity;
+        this.bag = knapsack.bag;
+    }
 
     //Getters
     public double getWeight() {
@@ -52,6 +72,8 @@ public class Knapsack implements Comparable<Knapsack>{
         }
     }
 
+
+
     // Fine print of Knapsack information.
     public String toString() {
         StringBuilder itemInfo = new StringBuilder();
@@ -68,6 +90,12 @@ public class Knapsack implements Comparable<Knapsack>{
                 result;
     }
 
+    public void removeItem(Item item){
+        bag.remove(item);
+        weight -= item.getWeight();
+        value -= item.getValue();
+        spaceLeft += item.getWeight();
+    }
     @Override
     public int compareTo(Knapsack toKnapsack) {
         Double thisItem = this.getSpaceLeft();

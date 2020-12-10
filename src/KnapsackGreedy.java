@@ -9,103 +9,9 @@ import java.util.Collections;
 public class KnapsackGreedy {
 
     // The greedy knapsack-problem algorithm for multiple knapsacks.
-    // Puts the best relative-benefit item into the knapsack with the most space left.
-    // Terminates when no more items could be added.
-    private ArrayList<Knapsack> greedyAlgorithmMostSpace(ArrayList<Knapsack> listOfKnapsacks, ArrayList<Item> listOfItems) {
-
-        // Loop through all items until termination criteria reached.
-        while (true) {
-
-            // Termination criteria = A full round of going through the items left, without
-            // any item being able to be added to the Knapsacks.
-            boolean itemsAdded = false;
-
-            for (int i = 0; i < listOfItems.size(); i++) {
-                Item thisItem;
-                Item nextItem;
-                Collections.sort(listOfKnapsacks); // Sorts the knapsacks in descending space left order.
-
-                // Choose item and neighbour.
-
-                // If we have an item in front of us as a neighbor
-                if (i < listOfItems.size() - 1) {
-                    thisItem = listOfItems.get(i);
-                    nextItem = listOfItems.get(i + 1);
-
-                    // Else if this is the last item in the list, compare it with the first item in the list instead.
-                } else {
-                    thisItem = listOfItems.get(i);
-                    nextItem = listOfItems.get(0);
-                }
-
-                // If this item has a better relative benefit than the neighbour.
-                if (thisItem.getRelativeBenefit() >= nextItem.getRelativeBenefit()) {
-
-                    // If item fits the largest knapsack, add it, and remove it from the itemList.
-                    if (listOfKnapsacks.get(0).itemFits(thisItem)) {
-                        listOfKnapsacks.get(0).addItem(thisItem);
-                        listOfItems.remove(thisItem);
-                        itemsAdded = true; // Flag that an item has been added and break.
-
-                        // If item does not fit in the largest knapsack, try fitting the neighbour
-                        // Instead.
-                    } else {
-                        if (listOfKnapsacks.get(0).itemFits(nextItem)) {
-                            listOfKnapsacks.get(0).addItem(nextItem);
-                            listOfItems.remove(nextItem);
-                            itemsAdded = true; // Flag that an item has been added and break.
-                        }
-                    }
-
-
-                    // Else if the neighbour item has a better relative benefit than this item.
-                } else {
-
-                    // If item fits the largest knapsack, add it, and remove it from the itemList.
-                    if (listOfKnapsacks.get(0).itemFits(nextItem)) {
-                        listOfKnapsacks.get(0).addItem(nextItem);
-                        listOfItems.remove(nextItem);
-                        i--; // This makes sure that we start from "thisItem" again on the next iteration.
-                        itemsAdded = true; // Flag that an item has been added.
-
-                        // If item does not fit in the largest knapsack, try fitting the neighbour
-                        // Instead.
-                    } else {
-                        if (listOfKnapsacks.get(0).itemFits(thisItem)) {
-                            listOfKnapsacks.get(0).addItem(thisItem);
-                            listOfItems.remove(thisItem);
-                            i--; // This makes sure that we start from "thisItem" again on the next iteration.
-                            itemsAdded = true; // Flag that an item has been added.
-                        }
-                    }
-                }
-            }
-
-            // If no item has been added to a single knapsack throughout the whole iteration of all items,
-            // Terminate the algorithm.
-            if (!itemsAdded || listOfItems.size() == 0) {
-                break;
-            }
-        }
-
-        // Prints info about items that have not been assigned to any Knapsack.
-        System.out.println("**************************************************");
-        System.out.println("Items left after the algorithm has ran: " + listOfItems.size() + "\n");
-        for (int i = 0; i < listOfItems.size(); i++) {
-            System.out.println("item: " + i + ": value -> " + listOfItems.get(i).getValue() + " weight -> " + listOfItems.get(i).getWeight());
-        }
-        System.out.println("**************************************************");
-        System.out.println();
-
-        // Return all the knapsacks.
-        return listOfKnapsacks;
-    }
-
-    // The greedy knapsack-problem algorithm for multiple knapsacks.
     // Puts the best relative-benefit item into the knapsack with the least space left.
     // Terminates when no more items could be added.
-    private ArrayList<Knapsack> greedyAlgorithmLessSpace(ArrayList<Knapsack> listOfKnapsacks, ArrayList<Item> listOfItems) {
-
+    private SackAndItem greedyAlgorithmLessSpace(ArrayList<Knapsack> listOfKnapsacks, ArrayList<Item> listOfItems) {
         // Loop through all items until termination criteria reached.
         while (true) {
 
@@ -114,68 +20,20 @@ public class KnapsackGreedy {
             boolean itemsAdded = false;
 
             for (int i = 0; i < listOfItems.size(); i++) {
-                Item thisItem;
-                Item nextItem;
+                Item thisItem = listOfItems.get(i);
                 Collections.sort(listOfKnapsacks); // Sorts the knapsacks in ascending space left order.
-
-                // Choose item and neighbour.
-
-                // If we have an item in front of us as a neighbor
-                if (i < listOfItems.size() - 1) {
-                    thisItem = listOfItems.get(i);
-                    nextItem = listOfItems.get(i + 1);
-
-                    // Else if this is the last item in the list, compare it with the first item in the list instead.
-                } else {
-                    thisItem = listOfItems.get(i);
-                    nextItem = listOfItems.get(0);
-                }
 
                 // Loops through all knapsacks.
                 for (int knapNr = 0; knapNr < listOfKnapsacks.size(); knapNr++) {
 
-                    // If this item has a better relative benefit than the neighbour.
-                    if (thisItem.getRelativeBenefit() >= nextItem.getRelativeBenefit()) {
 
-                        // If item fits the largest knapsack, add it, and remove it from the itemList.
-                        if (listOfKnapsacks.get(knapNr).itemFits(thisItem)) {
-                            listOfKnapsacks.get(knapNr).addItem(thisItem);
-                            listOfItems.remove(thisItem);
-                            itemsAdded = true; // Flag that an item has been added and break.
-                            break;
-
-                            // If item does not fit in the largest knapsack, try fitting the neighbour
-                            // Instead.
-                        } else {
-                            if (listOfKnapsacks.get(knapNr).itemFits(nextItem)) {
-                                listOfKnapsacks.get(knapNr).addItem(nextItem);
-                                listOfItems.remove(nextItem);
-                                itemsAdded = true; // Flag that an item has been added and break.
-                                break;
-                            }
-                        }
-
-
-                        // Else if the neighbour item has a better relative benefit than this item.
-                    } else {
-
-                        // If item fits the largest knapsack, add it, and remove it from the itemList.
-                        if (listOfKnapsacks.get(0).itemFits(nextItem)) {
-                            listOfKnapsacks.get(0).addItem(nextItem);
-                            listOfItems.remove(nextItem);
-                            i--; // This makes sure that we start from "thisItem" again on the next iteration.
-                            itemsAdded = true; // Flag that an item has been added and break.
-
-                            // If item does not fit in the largest knapsack, try fitting the neighbour
-                            // Instead.
-                        } else {
-                            if (listOfKnapsacks.get(0).itemFits(thisItem)) {
-                                listOfKnapsacks.get(0).addItem(thisItem);
-                                listOfItems.remove(thisItem);
-                                i--; // This makes sure that we start from "thisItem" again on the next iteration.
-                                itemsAdded = true; // Flag that an item has been added and break.
-                            }
-                        }
+                    // If item fits the largest knapsack, add it, and remove it from the itemList.
+                    if (listOfKnapsacks.get(knapNr).itemFits(thisItem)) {
+                        listOfKnapsacks.get(knapNr).addItem(thisItem);
+                        listOfItems.remove(thisItem);
+                        itemsAdded = true; // Flag that an item has been added and break.
+                        i--;
+                        break;
                     }
                 }
             }
@@ -187,17 +45,21 @@ public class KnapsackGreedy {
             }
         }
 
+
         // Prints info about items that have not been assigned to any Knapsack.
         System.out.println("**************************************************");
-        System.out.println("Items left after the algorithm has ran: " + listOfItems.size() + "\n");
-        for (int i = 0; i < listOfItems.size(); i++) {
+        System.out.println("Items left after the algorithm has ran: "+listOfItems.size()+"\n");
+        for(int i = 0; i<listOfItems.size();i++) {
             System.out.println("item: " + i + ": value -> " + listOfItems.get(i).getValue() + " weight -> " + listOfItems.get(i).getWeight());
         }
         System.out.println("**************************************************");
         System.out.println();
 
         // Return all the knapsacks.
-        return listOfKnapsacks;
+        SackAndItem sackAndItem = new SackAndItem();
+        sackAndItem.sacks = listOfKnapsacks;
+        sackAndItem.items = listOfItems;
+        return sackAndItem;
     }
 
    /* // Returns the index of the knapsack that has the most capacity left to utilize.
@@ -232,21 +94,43 @@ public class KnapsackGreedy {
         ArrayList<Item> listOfItems = new ArrayList<>();
 
         //init and add knapsacks
-        Knapsack knapsack1 = new Knapsack(15);
-        Knapsack knapsack2 = new Knapsack(10);
-        Knapsack knapsack3 = new Knapsack(6);
+        Knapsack knapsack1 = new Knapsack(180);
+        Knapsack knapsack2 = new Knapsack(159);
+        Knapsack knapsack3 = new Knapsack(180);
         listOfKnapsacks.add(knapsack1);
         listOfKnapsacks.add(knapsack2);
         listOfKnapsacks.add(knapsack3);
 
         //init and add items
-        Item i1 = new Item(10, 7);
-        Item i2 = new Item(1, 1);
-        Item i3 = new Item(3, 5);
-        Item i4 = new Item(8, 8);
-        Item i5 = new Item(5, 4);
-        Item i6 = new Item(4, 5);
-        Item i7 = new Item(2, 1);
+        Item i1 = new Item(10, 71);
+        Item i2 = new Item(12, 16);
+        Item i3 = new Item(33, 53);
+        Item i4 = new Item(82, 84);
+        Item i5 = new Item(54, 43);
+        Item i6 = new Item(45, 25);
+        Item i7 = new Item(23, 15);
+        Item i12 = new Item(10, 72);
+        Item i22 = new Item(14, 16);
+        Item i32 = new Item(5, 52);
+        Item i42 = new Item(58, 83);
+        Item i52 = new Item(65, 44);
+        Item i62 = new Item(74, 55);
+        Item i72 = new Item(25, 15);
+        Item i13 = new Item(10, 73);
+        Item i23 = new Item(13, 16);
+        Item i33 = new Item(34, 53);
+        Item i43 = new Item(86, 86);
+        Item i53 = new Item(57, 42);
+        Item i63 = new Item(45, 52);
+        Item i73 = new Item(25, 15);
+        Item i14 = new Item(10, 73);
+        Item i24 = new Item(16, 16);
+        Item i34 = new Item(39, 56);
+        Item i44 = new Item(82, 81);
+        Item i54 = new Item(53, 42);
+        Item i64 = new Item(44, 52);
+        Item i74 = new Item(25, 15);
+
         listOfItems.add(i1);
         listOfItems.add(i2);
         listOfItems.add(i3);
@@ -254,6 +138,29 @@ public class KnapsackGreedy {
         listOfItems.add(i5);
         listOfItems.add(i6);
         listOfItems.add(i7);
+        listOfItems.add(i12);
+        listOfItems.add(i22);
+        listOfItems.add(i32);
+        listOfItems.add(i42);
+        listOfItems.add(i52);
+        listOfItems.add(i62);
+        listOfItems.add(i72);
+        listOfItems.add(i13);
+        listOfItems.add(i23);
+        listOfItems.add(i33);
+        listOfItems.add(i43);
+        listOfItems.add(i53);
+        listOfItems.add(i63);
+        listOfItems.add(i73);
+        listOfItems.add(i14);
+        listOfItems.add(i24);
+        listOfItems.add(i34);
+        listOfItems.add(i44);
+        listOfItems.add(i54);
+        listOfItems.add(i64);
+        listOfItems.add(i74);
+
+
 
         // Sort in descending relative benefit order.
         Collections.sort(listOfItems);
@@ -268,13 +175,25 @@ public class KnapsackGreedy {
 
         // greedyAlgorithmLessSpace will only work if the return in the compareTo inside of Knapsack.java
         // is reversed! That is --> return thisItem.compareTo(compareToItem);
-        ArrayList<Knapsack> result = knapsackGreedy.greedyAlgorithmLessSpace(listOfKnapsacks, listOfItems);
+        SackAndItem result = knapsackGreedy.greedyAlgorithmLessSpace(listOfKnapsacks, listOfItems);
 
         // Print Knapsack information.
-        for (Knapsack knapsack : result) {
+       for (Knapsack knapsack : result.sacks) {
             System.out.println(knapsack.toString());
         }
 
         System.out.println("-*-*-*-");
+
+        System.out.println("Neighborhood search");
+
+        KnapsackNeighborhood search = new KnapsackNeighborhood();
+
+        System.out.println("Greedy Value: "+search.evalSacksGreedy(result.sacks));
+
+        SackAndItem sackAndItem = search.search(listOfItems, listOfKnapsacks, 4);
+        System.out.println("Neighborhood search :"+ search.evalSacks(sackAndItem.sacks));
+
+
+
     }
 }
