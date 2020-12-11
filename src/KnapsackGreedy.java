@@ -190,7 +190,11 @@ public class KnapsackGreedy {
 
         System.out.println("Greedy Value: "+search.evalSacksGreedy(result.sacks));
 
-        SackAndItem sackAndItem = search.search(listOfItems, listOfKnapsacks, 10000);
+        System.out.println("sputnik");
+        for (int i = 0; i < listOfItems.size(); i++) {
+            System.out.println(listOfItems.get(i).getRelativeBenefit());
+        }
+        SackAndItem sackAndItem = search.search(listOfItems, listOfKnapsacks, 1);
         System.out.println("Neighborhood search :"+ search.evalSacks(sackAndItem.sacks));
 
 
