@@ -5,6 +5,8 @@ public class Item implements Comparable<Item> {
     private double weight;
     private double relativeBenefit;
 
+    public Item() {}
+
     public Item(double value, double weight) {
         this.weight = weight;
         this.value = value;
@@ -23,6 +25,10 @@ public class Item implements Comparable<Item> {
         return relativeBenefit;
     }
 
+    @Override
+    public Item clone() {
+        return new Item(this.value, this.weight);
+    }
     @Override
     public int compareTo(Item toItem) {
         Double thisItem = this.getRelativeBenefit();

@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 
 public class Knapsack implements Comparable<Knapsack>{
-    private double weight;
-    private double value;
-    private double capacity;
-    private double spaceLeft;
-    private ArrayList<Item> bag = new ArrayList<>();
+    public double weight;
+    public double value;
+    public double capacity;
+    public double spaceLeft;
+    public ArrayList<Item> bag = new ArrayList<>();
 
     public Knapsack(double capacity) {
         this.weight = 0;
@@ -96,6 +96,25 @@ public class Knapsack implements Comparable<Knapsack>{
         value -= item.getValue();
         spaceLeft += item.getWeight();
     }
+
+    @Override
+    public Knapsack clone() {
+        Knapsack cloneKnapsack = new Knapsack(this.capacity);
+        ArrayList<Item> cloneBag = new ArrayList<>();
+
+        for (Item item : getBag()) {
+            cloneBag.add(item.clone());
+        }
+
+        cloneKnapsack.weight = this.weight;
+        cloneKnapsack.value = this.value;
+        cloneKnapsack.capacity = this.capacity;
+        cloneKnapsack.spaceLeft = this.spaceLeft;
+        cloneKnapsack.bag = cloneBag;
+
+        return cloneKnapsack;
+    }
+
     @Override
     public int compareTo(Knapsack toKnapsack) {
         Double thisItem = this.getSpaceLeft();

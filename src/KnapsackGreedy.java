@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 /**
  * The algorithm now chooses the knapsack that has the MOST space left... Pretty good performance.
@@ -93,86 +94,52 @@ public class KnapsackGreedy {
         ArrayList<Knapsack> listOfKnapsacks = new ArrayList<>();
         ArrayList<Item> listOfItems = new ArrayList<>();
 
-        //init and add knapsacks
-        Knapsack knapsack1 = new Knapsack(180);
-        Knapsack knapsack2 = new Knapsack(159);
-        Knapsack knapsack3 = new Knapsack(180);
+        //Brute-force testing
+        Random rand = new Random();
+        int min = 5;
+        int max = 15;
+
+        for (int i = 0; i < 20; i++) {
+            int val = rand.nextInt(max - min) + min;
+            int w = rand.nextInt(max - min) + min;
+            listOfItems.add(new Item(val, w));
+        }
+
+        // Manual testing
+
+        //init and add items + knapsacks
+        Knapsack knapsack1 = new Knapsack(17);
+        Knapsack knapsack2 = new Knapsack(26);
+        Knapsack knapsack3 = new Knapsack(32);
+
         listOfKnapsacks.add(knapsack1);
         listOfKnapsacks.add(knapsack2);
         listOfKnapsacks.add(knapsack3);
 
-        //init and add items
-        Item i1 = new Item(10, 71);
-        Item i2 = new Item(12, 14);
-        Item i3 = new Item(33, 53);
-        Item i4 = new Item(82, 84);
-        Item i5 = new Item(54, 43);
-        Item i6 = new Item(45, 25);
-        Item i7 = new Item(23, 15);
-        Item i12 = new Item(10, 72);
-        Item i22 = new Item(14, 17);
-        Item i32 = new Item(5, 52);
-        Item i42 = new Item(58, 83);
-        Item i52 = new Item(65, 44);
-        Item i62 = new Item(74, 55);
-        Item i72 = new Item(25, 15);
-        Item i13 = new Item(10, 73);
-        Item i23 = new Item(13, 16);
-        Item i33 = new Item(34, 53);
-        Item i43 = new Item(86, 86);
-        Item i53 = new Item(57, 42);
-        Item i63 = new Item(45, 52);
-        Item i73 = new Item(25, 15);
-        Item i14 = new Item(10, 73);
-        Item i24 = new Item(16, 16);
-        Item i34 = new Item(39, 56);
-        Item i44 = new Item(82, 81);
-        Item i54 = new Item(53, 42);
-        Item i64 = new Item(44, 52);
-        Item i74 = new Item(25, 15);
-
+        /*Item i1 = new Item(10, 7);
+        Item i2 = new Item(1, 1);
+        Item i3 = new Item(3, 5);
+        Item i4 = new Item(8, 8);
+        Item i5 = new Item(5, 4);
+        Item i6 = new Item(4, 5);
+        Item i7 = new Item(2, 1);
         listOfItems.add(i1);
         listOfItems.add(i2);
         listOfItems.add(i3);
         listOfItems.add(i4);
         listOfItems.add(i5);
         listOfItems.add(i6);
-        listOfItems.add(i7);
-        listOfItems.add(i12);
-        listOfItems.add(i22);
-        listOfItems.add(i32);
-        listOfItems.add(i42);
-        listOfItems.add(i52);
-        listOfItems.add(i62);
-        listOfItems.add(i72);
-        listOfItems.add(i13);
-        listOfItems.add(i23);
-        listOfItems.add(i33);
-        listOfItems.add(i43);
-        listOfItems.add(i53);
-        listOfItems.add(i63);
-        listOfItems.add(i73);
-        listOfItems.add(i14);
-        listOfItems.add(i24);
-        listOfItems.add(i34);
-        listOfItems.add(i44);
-        listOfItems.add(i54);
-        listOfItems.add(i64);
-        listOfItems.add(i74);
-
-
+        listOfItems.add(i7);*/
 
         // Sort in descending relative benefit order.
         Collections.sort(listOfItems);
 
         // Prints relative benefit of items in descending order.
         for (int i = 0; i < listOfItems.size(); i++) {
-            System.out.println(listOfItems.get(i).getRelativeBenefit());
+            System.out.println(listOfItems.get(i).getRelativeBenefit() + " "  + listOfItems.get(i).getValue() + " " + listOfItems.get(i).getWeight());
         }
 
         // Run the algorithm
-        /*ArrayList<Knapsack> result = knapsackGreedy.greedyAlgorithmMostSpace(listOfKnapsacks, listOfItems);*/
-
         // greedyAlgorithmLessSpace will only work if the return in the compareTo inside of Knapsack.java
         // is reversed! That is --> return thisItem.compareTo(compareToItem);
         SackAndItem result = knapsackGreedy.greedyAlgorithmLessSpace(listOfKnapsacks, listOfItems);
@@ -188,13 +155,13 @@ public class KnapsackGreedy {
 
         KnapsackNeighborhood search = new KnapsackNeighborhood();
 
-        System.out.println("Greedy Value: "+search.evalSacksGreedy(result.sacks));
-
         System.out.println("sputnik");
         for (int i = 0; i < listOfItems.size(); i++) {
             System.out.println(listOfItems.get(i).getRelativeBenefit());
         }
-        SackAndItem sackAndItem = search.search(listOfItems, listOfKnapsacks, 1);
+        SackAndItem sackAndItem = search.search(listOfItems, listOfKnapsacks, 100);
+
+        System.out.println("Greedy Value: "+search.evalSacksGreedy(result.sacks));
         System.out.println("Neighborhood search :"+ search.evalSacks(sackAndItem.sacks));
 
 
