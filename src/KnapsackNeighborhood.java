@@ -6,9 +6,15 @@ public class KnapsackNeighborhood {
 
     public SackAndItem search(ArrayList<Item> items, ArrayList<Knapsack> knapsacks, int iterations) {
         boolean foundBetter = false;
+        int packSuccess = 0;
+        int swapSuccess = 0;
+
 
         ArrayList<ArrayList<Item>> sameValueItems = new ArrayList<ArrayList<Item>>();
         ArrayList<ArrayList<Knapsack>> sameValueSacks = new ArrayList<ArrayList<Knapsack>>();
+
+        ArrayList<Knapsack> tempBestKnapsacks = new ArrayList<Knapsack>();
+        ArrayList<Item> tempBestItems = new ArrayList<Item>();
 
         for (int o = 0; o < iterations; o++) {
 
@@ -26,8 +32,10 @@ public class KnapsackNeighborhood {
             // If the items list is empty, then we cannot possibly increase the total value of the knapsacks,
             // So we terminate.
             if (!items.isEmpty()) {
-                System.out.println("souttwrwerwe: " + o);
+                System.out.println("Iteration: " + o);
 
+                tempBestItems = items;
+                tempBestKnapsacks = knapsacks;
                 for (int i = 0; i < knapsacks.size(); i++) { // Loop through knapsacks
                     for (int j = 0; j < knapsacks.get(i).getBag().size(); j++) { // Loop through the current knapsack's items [j].
 
@@ -69,27 +77,62 @@ public class KnapsackNeighborhood {
 
                                             // Check if the total value of the changed knapsacks is better than
                                             // Before the swap.
-                                            if (evalSacks(tempKnapsack) > evalSacks(knapsacks)) {
+                                            if (evalSacks(tempKnapsack) > evalSacks(tempBestKnapsacks)) {
                                                 // Replace old knapsacks and set of items with new ones.
-                                                knapsacks = tempKnapsack;
-                                                items = tempItem;
+                                                tempBestKnapsacks = tempKnapsack;
+                                                tempBestItems = tempItem;
                                                 foundBetter = true;
                                                 System.out.println("Found better combo:");
+                                                swapSuccess ++;
 
                                                 // Else if the changed knapsacks have the same value as pre-swap,
                                                 // And no better combo has been found throughout this iteration.
-                                            } else if (evalSacks(tempKnapsack) == evalSacks(knapsacks) && foundBetter == false) {
+                                            } else if (evalSacks(tempKnapsack) == evalSacks(tempBestKnapsacks) && foundBetter == false) {
                                                 // Add this same-valued combo designated sets for same-valued knapsacks and items.
                                                 sameValueSacks.add(new ArrayList<>(tempKnapsack));
                                                 sameValueItems.add(new ArrayList<>(tempItem));
                                                 System.out.println("found same value combo:");
                                             }
 
-                                            System.out.println(evalSacks(knapsacks));
+                                            System.out.println(evalSacks(tempBestKnapsacks));
                                         }
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    ArrayList<Knapsack> tempKnapsack = cloneKnapSacks(knapsacks);
+                    ArrayList<Item> tempItem = new ArrayList<Item>(items);
+                    System.out.println("attempting to pack");
+
+                    //Tries to move all items from target sack to other sacks
+                    if(packSacksUsingIndex(tempKnapsack, i)) {
+
+                        //for every item not in sack try to put in target sack
+                        for (int notAssignedItems = 0; notAssignedItems < tempItem.size(); notAssignedItems++) {
+                            if (tempKnapsack.get(i).itemFits(tempItem.get(notAssignedItems))) {
+                                tempKnapsack.get(i).addItem(tempItem.get(notAssignedItems));
+                                System.out.println("Added Item after packing");
+                                packSuccess ++;
+                            }
+                        }
+                        // Check if the total value of the changed knapsacks is better than
+                        // Before the pack and add.
+                        if (evalSacks(tempKnapsack) > evalSacks(tempBestKnapsacks)) {
+                            // Replace old best knapsacks and set of items with new ones.
+                            tempBestKnapsacks = tempKnapsack;
+                            tempBestItems = tempItem;
+                            foundBetter = true;
+                            System.out.println("Found better combo:");
+
+                            // Else if the changed knapsacks have the same value as pre-swap,
+                            // And no better combo has been found throughout this iteration.
+                        } else if (evalSacks(tempKnapsack) == evalSacks(tempBestKnapsacks) && foundBetter == false) {
+                            // Add this same-valued combo designated sets for same-valued knapsacks and items.
+                            sameValueSacks.add(new ArrayList<>(tempKnapsack));
+                            sameValueItems.add(new ArrayList<>(tempItem));
+                            System.out.println("found same value combo:");
                         }
                     }
                 }
@@ -113,6 +156,7 @@ public class KnapsackNeighborhood {
                         }
                     }
 
+
                     System.out.println("**********************");
                     System.out.println("NEW knaps");
                     for (int i = 0; i < sameValueSacks.get(ranIndex).size(); i++) {
@@ -126,6 +170,10 @@ public class KnapsackNeighborhood {
 
                     items = sameValueItems.get(ranIndex);
                     knapsacks = sameValueSacks.get(ranIndex);
+
+                }else if(foundBetter){
+                    knapsacks = tempBestKnapsacks;
+                    items = tempBestItems;
                 }
 
                 // Empty the lists of same-valued combos.
@@ -140,6 +188,13 @@ public class KnapsackNeighborhood {
             }
         }
 
+        if(packSuccess >0){
+            System.out.println("Packed and added: "+packSuccess);
+        }
+        if(swapSuccess>0){
+            System.out.println("Swap success: "+swapSuccess);
+        }
+
         // Create and return the best valued combo of knapsacks and items found with the help of neighborhood search.
         SackAndItem sackAndItem = new SackAndItem();
         sackAndItem.items = items;
@@ -149,19 +204,20 @@ public class KnapsackNeighborhood {
 
     // Swaps the specified items between the specified knapsacks if it is possible.
     public boolean trySwap(Knapsack k1, Knapsack k2, int k1swap, int k2swap) {
+        if (k1.getBag().get(k1swap).getWeight() != k2.getBag().get(k2swap).getWeight()){
+            // If a swap does not exceed the capacity limits of the knapsacks.
+            if (k1.getCapacity() >= (k1.getWeight() - k1.getBag().get(k1swap).getWeight()) + k2.getBag().get(k2swap).getWeight()
+                    && k2.getCapacity() >= (k2.getWeight() - k2.getBag().get(k2swap).getWeight()) + k1.getBag().get(k1swap).getWeight()) {
 
-        // If a swap does not exceed the capacity limits of the knapsacks.
-        if (k1.getCapacity() >= (k1.getWeight()-k1.getBag().get(k1swap).getWeight())+k2.getBag().get(k2swap).getWeight()
-                && k2.getCapacity() >= (k2.getWeight()-k2.getBag().get(k2swap).getWeight())+k1.getBag().get(k1swap).getWeight()) {
-
-            // Make the swap.
-            Item temp = k1.getBag().get(k1swap);
-            k1.removeItem(temp);
-            k1.addItem(k2.getBag().get(k2swap));
-            k2.removeItem(k2.getBag().get(k2swap));
-            k2.addItem(temp);
-            return true;
-        }
+                // Make the swap.
+                Item temp = k1.getBag().get(k1swap);
+                k1.removeItem(temp);
+                k1.addItem(k2.getBag().get(k2swap));
+                k2.removeItem(k2.getBag().get(k2swap));
+                k2.addItem(temp);
+                return true;
+            }
+    }
         return false;
     }
 
@@ -201,5 +257,35 @@ public class KnapsackNeighborhood {
         }
 
         return cloneItems;
+    }
+
+
+    public boolean packSacksUsingIndex(ArrayList<Knapsack> sacks,int index){
+        Knapsack targetSack = sacks.remove(index);
+        Boolean packed = false;
+
+
+        for(int i = 0; i < targetSack.getBag().size(); i++){
+            for(int j = 0; j < sacks.size(); j++){
+
+                System.out.println("bag size left: "+sacks.get(j).getSpaceLeft());
+                System.out.println("item size : "+targetSack.getBag().get(i).getWeight());
+                if(sacks.get(j).itemFits(targetSack.getBag().get(i))){
+                    System.out.println("Moved one item to other bag");
+                    packed = true;
+                    sacks.get(j).addItem(targetSack.getBag().get(i));
+                    targetSack.removeItem(targetSack.getBag().get(i));
+                    i--;
+                    break;
+                }
+            }
+        }
+
+        sacks.add(index, targetSack);
+        if(packed){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
