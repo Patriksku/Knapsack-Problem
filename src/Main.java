@@ -12,10 +12,10 @@ public class Main {
 
         //Brute-force testing
         Random rand = new Random();
-        int min = 1;
-        int max = 40;
+        int min = 7;
+        int max = 25;
 
-        for (int i = 0; i < 70; i++) {
+        for (int i = 0; i < 30; i++) {
             int val = rand.nextInt(max - min) + min;
             int w = rand.nextInt(max - min) + min;
             listOfItems.add(new Item(val, w));
@@ -87,9 +87,9 @@ public class Main {
         for (int i = 0; i < listOfItems.size(); i++) {
             System.out.println(listOfItems.get(i).getRelativeBenefit());
         }
-        SackAndItem sackAndItem = search.search(listOfItems, listOfKnapsacks, 200);
+        SackAndItem sackAndItem = search.search(listOfItems, listOfKnapsacks, 30);
 
-        System.out.println("Greedy Value: "+search.evalSacksGreedy(result.sacks));
+        System.out.println("Greedy Value: "+knapsackGreedy.evalSacksGreedy(result.sacks));
         System.out.println("Neighborhood search :"+ search.evalSacks(sackAndItem.sacks));
 
     }

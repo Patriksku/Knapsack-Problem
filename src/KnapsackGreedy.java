@@ -63,6 +63,14 @@ public class KnapsackGreedy {
         return sackAndItem;
     }
 
+    public int evalSacksGreedy(ArrayList<Knapsack> sacks) {
+        int totalValue = 0;
+        for(int i = 0; i< sacks.size(); i++){
+            totalValue += sacks.get(i).getValue();
+        }
+        return totalValue;
+    }
+
    /* // Returns the index of the knapsack that has the most capacity left to utilize.
     // ---Maybe not efficient!!! Try random as well???
     private int chooseKnapsack(ArrayList<Knapsack> listOfKnapsacks) {

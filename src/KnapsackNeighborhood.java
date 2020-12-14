@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class KnapsackNeighborhood {
 
-
+    //Neighborhood search
     public SackAndItem search(ArrayList<Item> items, ArrayList<Knapsack> knapsacks, int iterations) {
         boolean foundBetter = false;
         int packSuccess = 0;
@@ -31,7 +31,7 @@ public class KnapsackNeighborhood {
 
             // If the items list is empty, then we cannot possibly increase the total value of the knapsacks,
             // So we terminate.
-            if (!items.isEmpty()) {
+            if (!items.isEmpty() || spaceLeftItemFits(knapsacks,items)) {
                 System.out.println("Iteration: " + o);
 
                 tempBestItems = items;
@@ -183,7 +183,11 @@ public class KnapsackNeighborhood {
 
                 // If the list of items is empty, then we terminate.
             } else {
-                System.out.println("Terminating on iteration " + o + ", as no more items are left to be added.");
+                if(!items.isEmpty()) {
+                    System.out.println("Terminating on iteration " + o + ", as no more items are left to be added.");
+                }else{
+                    System.out.println("Terminating on iteration " + o + ", no space left or unused items too big.");
+                }
                 break;
             }
         }
@@ -230,13 +234,6 @@ public class KnapsackNeighborhood {
         return totalValue;
     }
 
-    public int evalSacksGreedy(ArrayList<Knapsack> sacks) {
-        int totalValue = 0;
-        for(int i = 0; i< sacks.size(); i++){
-            totalValue += sacks.get(i).getValue();
-        }
-        return totalValue;
-    }
 
     // Clones and returns the specified knapsack as a new object.
     public ArrayList<Knapsack> cloneKnapSacks(ArrayList<Knapsack> sacks) {
@@ -249,6 +246,7 @@ public class KnapsackNeighborhood {
         return cloneSack;
     }
 
+    //Clones an arraylist containing items
     public ArrayList<Item> cloneItems(ArrayList<Item> toClone) {
         ArrayList<Item> cloneItems = new ArrayList<>();
 
@@ -260,6 +258,7 @@ public class KnapsackNeighborhood {
     }
 
 
+    //Tries to move items away from knapsack at index
     public boolean packSacksUsingIndex(ArrayList<Knapsack> sacks,int index){
         Knapsack targetSack = sacks.remove(index);
         Boolean packed = false;
@@ -287,5 +286,23 @@ public class KnapsackNeighborhood {
         }else{
             return false;
         }
+    }
+
+    public boolean spaceLeftItemFits(ArrayList<Knapsack> knapsacks, ArrayList<Item> items){
+        int spaceleft = 0;
+        boolean itemFit = false;
+        for(int i = 0; i < knapsacks.size(); i++){
+            spaceleft += knapsacks.get(i).spaceLeft;
+        }
+        for(int i = 0; i < items.size(); i++){
+            if(spaceleft >= items.get(i).getWeight()){
+                itemFit = true;
+            }
+        }
+
+        if(spaceleft <= 0 || !itemFit){
+            return false;
+        }
+        return true;
     }
 }
